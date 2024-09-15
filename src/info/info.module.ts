@@ -1,26 +1,16 @@
-// import { Module } from '@nestjs/common';
-// import { TypeOrmModule } from '@nestjs/typeorm';
-// import { Info } from './info';
-// import { InfoService } from './info.service';
-// import { InfoController } from './info.controller';
-
-// @Module({
-//   // imports: [TypeOrmModule.forFeature([info])],
-//   imports: [TypeOrmModule.forFeature([Info])],
-
-//   providers: [InfoService],
-//   controllers: [InfoController],
-// })
-// export class infoModule {}
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Info } from './info.entity';
+import { EntityPropertyEntity } from './entity_Property.entity';
 import { InfoService } from './info.service';
 import { InfoController } from './info.controller';
+import { TblApplicationUserEntity } from './tblApplicationUser.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Info])],
+  imports: [TypeOrmModule.forFeature([EntityPropertyEntity],'IHXSupremeConnection'),
+  TypeOrmModule.forFeature([TblApplicationUserEntity], 'MediAuthConnection') // Connection for AuthEntity (if used)
+],
+
   providers: [InfoService],
   controllers: [InfoController],
 })

@@ -1,6 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { LoginDto } from './dto/login.dto';
 
 @Injectable()
@@ -11,33 +11,41 @@ export class AuthService {
     'Content-Type': 'application/json-patch+json',
   };
 
-  constructor(private jwtService: JwtService) {}
+  constructor(private readonly jwtService: JwtService) {}
 
+  // Authenticate with the external service
   private async authenticateWithExternalService(userName: string, password: string): Promise<any> {
     try {
       const response = await axios.post(this.authUrl, { userName, password, applicationId: '5385' }, { headers: this.headers });
       return response.data;
     } catch (error) {
-      console.error('Authentication error:', error);
-      throw new UnauthorizedException('Failed to authenticate with external service');
+      this.handleAuthenticationError(error);
     }
   }
 
-  private async validateUser(userName: string, password: string): Promise<any> {
-    const userData = await this.authenticateWithExternalService(userName, password);
-    const { roles } = userData;
+  // Handle errors from external service authentication
+  private handleAuthenticationError(error: AxiosError): void {
+    console.error('Authentication error:', error.message); // Consider using a logging service
+    if (error.response?.status === 401) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    throw new InternalServerErrorException('Failed to authenticate with external service');
+  }
 
-    if (!roles) {
+  // Validate the user's roles and authentication status
+  private async validateUser(userName: string, password: string): Promise<{ userName: string }> {
+    const userData = await this.authenticateWithExternalService(userName, password);
+    if (!userData.roles) {
       throw new UnauthorizedException('User does not have the required role');
     }
-
     return { userName };
   }
 
-  async login(loginDto: LoginDto) {
+  // Perform login and return JWT token
+  async login(loginDto: LoginDto): Promise<{ access_token: string }> {
     await this.validateUser(loginDto.userName, loginDto.password);
     const payload = { username: loginDto.userName };
-    const access_token = this.jwtService.sign(payload);
-    return { access_token };
+    const accessToken = this.jwtService.sign(payload);
+    return { access_token: accessToken };
   }
 }

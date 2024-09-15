@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('Entity_Property') // Ensure this matches the actual table name in your database
-export class Info {
+export class EntityPropertyEntity {
   @PrimaryGeneratedColumn()
   EP_ID: number;
 
@@ -14,7 +14,7 @@ export class Info {
   @Column()
   EP_PropertyValue: string;
 
-  @Column({ type: 'bit' }) // Explicitly specify 'bit' type for boolean
+  @Column() // Explicitly specify 'bit' type for boolea
   EP_ISACTIVE: boolean;
 
   @Column()

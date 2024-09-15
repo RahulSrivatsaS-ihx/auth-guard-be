@@ -153,7 +153,8 @@ console.log('eeeeeeeeeee',process.env.DB_USER)
 
 
 //working for local
-export const databaseConfig: TypeOrmModuleOptions = {
+export const IHXSupremeConfig: TypeOrmModuleOptions = {
+  name: 'IHXSupremeConnection',
   type: 'mysql',// Change to 'mssql' for SQL Server
   host: process.env.DB_HOST,
   port: parseInt(process.env.DB_PORT, 10),
@@ -168,3 +169,20 @@ export const databaseConfig: TypeOrmModuleOptions = {
     trustServerCertificate: true, // Change to true for local dev / self-signed certs
     connectTimeout: 60000, // Set to 30 seconds (30000 ms)
   },}
+
+  export const MediAuthConfig: TypeOrmModuleOptions = {
+    name: 'MediAuthConnection',
+    type: 'mysql',// Change to 'mssql' for SQL Server
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT, 10),
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_MEDIAUTH_DATABASE,
+    entities: [__dirname + '/../**/*.entity.{js,ts}'],
+    synchronize: synchronize, // Set to false in production
+    logging: logging, // Enable logging to see the queries
+    extra: {
+      encrypt: true,   // Use encryption if needed
+      trustServerCertificate: true, // Change to true for local dev / self-signed certs
+      connectTimeout: 60000, // Set to 30 seconds (30000 ms)
+    },}
