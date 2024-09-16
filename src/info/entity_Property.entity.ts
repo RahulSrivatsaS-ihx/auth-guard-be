@@ -14,7 +14,7 @@ export class EntityPropertyEntity {
   @Column()
   EP_PropertyValue: string;
 
-  @Column() // Explicitly specify 'bit' type for boolea
+  @Column() // Explicitly specify 'bit' type for boolean
   EP_ISACTIVE: boolean;
 
   @Column()
