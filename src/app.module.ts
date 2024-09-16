@@ -8,6 +8,7 @@ import { InfoModule } from './info/info.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { FeatureUpdateModule } from './featureEnabling.ts/featureEnabling.module';
+import { PayerAdditionModule } from './payerAddition/payerAddition.module';
 
 @Module({
   imports: [
@@ -20,9 +21,10 @@ import { FeatureUpdateModule } from './featureEnabling.ts/featureEnabling.module
     InfoModule, // Ensure this module is imported
     AuthModule,
     FeatureUpdateModule,
+    PayerAdditionModule,
   ],
   controllers: [AppController],
-  providers: [AppService,AuthModule,FeatureUpdateModule],
+  providers: [AppService,AuthModule,FeatureUpdateModule,PayerAdditionModule],
 })
 export class AppModule {
   constructor() {
