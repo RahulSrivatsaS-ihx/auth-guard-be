@@ -7,6 +7,7 @@ import { IHXSupremeConfig,MediAuthConfig } from './config/database.config';
 import { InfoModule } from './info/info.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { FeatureUpdateModule } from './featureEnabling.ts/featureEnabling.module';
 
 @Module({
   imports: [
@@ -17,10 +18,11 @@ import { ConfigModule } from '@nestjs/config';
     TypeOrmModule.forRoot(MediAuthConfig), // Ensure this line is included
     TypeOrmModule.forRoot(IHXSupremeConfig),
     InfoModule, // Ensure this module is imported
-    AuthModule
+    AuthModule,
+    FeatureUpdateModule,
   ],
   controllers: [AppController],
-  providers: [AppService,AuthModule],
+  providers: [AppService,AuthModule,FeatureUpdateModule],
 })
 export class AppModule {
   constructor() {
