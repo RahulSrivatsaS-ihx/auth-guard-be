@@ -9,8 +9,7 @@ export class UserCreationController {
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto): Promise<{ message: string }> {
     try {
-      const { userData } = createUserDto;
-      const message = await this.userCreationService.createUser(userData);
+      const message = await this.userCreationService.createUser(createUserDto);
       return { message };
     } catch (error) {
       throw new BadRequestException(error.message);

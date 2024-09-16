@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, IsObject } from 'class-validator';
 
 export class CreateUserDataDto {
   @IsNotEmpty()
@@ -39,4 +39,8 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   userData: CreateUserDataDto;
+
+  @IsOptional()
+  @IsObject()
+  roles?: Record<string, string>; // Key-value pair for roleId and roleName
 }
