@@ -1,17 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EntityPropertyEntity } from './entity_Property.entity';
 import { TblApplicationUserEntity } from './tblApplicationUser.entity';
 import { QUERY_CONSTANTS } from 'src/utils/constants';
+import { EntityTbl_Entity } from './entity.entity';
 
 @Injectable()
 export class InfoService {
   private readonly logger = new Logger(InfoService.name);
 
   constructor(
-    @InjectRepository(EntityPropertyEntity, 'IHXSupremeConnection')
-    private readonly infoRepository: Repository<EntityPropertyEntity>,
+    @InjectRepository(EntityTbl_Entity, 'IHXSupremeConnection')
+    private readonly infoRepository: Repository<EntityTbl_Entity>,
 
     @InjectRepository(TblApplicationUserEntity, 'MediAuthConnection')
     private readonly authRepository: Repository<TblApplicationUserEntity>,
@@ -85,7 +85,7 @@ export class InfoService {
    * @param isHospitalUpdate Flag to determine which alias to use
    */
   private getAlias(isHospitalUpdate: boolean): string {
-    return isHospitalUpdate ? 'Entity_Property' : 'TblApplicationUser';
+    return isHospitalUpdate ? 'EntityTbl_Entity' : 'TblApplicationUser';
   }
 
   /**
@@ -94,7 +94,7 @@ export class InfoService {
    */
   private getColumns(isHospitalUpdate: boolean): string[] {
     return isHospitalUpdate 
-      ? QUERY_CONSTANTS.ENTIT_PROPERTY_COLUMNS  // Entity_Property columns
+      ? QUERY_CONSTANTS.ENTIT_TBL_COLUMNS  // Entity_Property columns
       : QUERY_CONSTANTS.TBL_APPLICATION_USER_COLUMNS; // TblApplicationUser columns
   }
 

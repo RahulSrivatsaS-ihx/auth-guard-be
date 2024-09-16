@@ -1,13 +1,13 @@
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EntityPropertyEntity } from './entity_Property.entity';
 import { InfoService } from './info.service';
 import { InfoController } from './info.controller';
 import { TblApplicationUserEntity } from './tblApplicationUser.entity';
+import { EntityTbl_Entity } from './entity.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([EntityPropertyEntity],'IHXSupremeConnection'),
+  imports: [TypeOrmModule.forFeature([EntityTbl_Entity],'IHXSupremeConnection'),
   TypeOrmModule.forFeature([TblApplicationUserEntity], 'MediAuthConnection') // Connection for AuthEntity (if used)
 ],
 

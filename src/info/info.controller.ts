@@ -2,7 +2,7 @@ import { Controller, Body, BadRequestException, UseGuards, Post, Get, Put } from
 import { InfoService } from './info.service';
 // import { Info } from './entity_Property.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { EntityPropertyEntity } from './entity_Property.entity';
+import { EntityTbl_Entity } from './entity.entity';
 
 @Controller('info')
 export class InfoController {
@@ -10,7 +10,7 @@ export class InfoController {
   
   // @UseGuards(JwtAuthGuard) // Protect this route with the JWT guard
   @Post()
-  async getInfo(@Body() body: Record<string, string | number>): Promise<EntityPropertyEntity[]> {
+  async getInfo(@Body() body: Record<string, string | number>): Promise<EntityTbl_Entity[]> {
     if (Object.keys(body).length === 0) {
       throw new BadRequestException('At least one key-value pair must be provided');
     }
