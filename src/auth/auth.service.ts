@@ -16,7 +16,12 @@ export class AuthService {
   // Authenticate with the external service
   private async authenticateWithExternalService(userName: string, password: string): Promise<any> {
     try {
-      const response = await axios.post(this.authUrl, { userName, password, applicationId: '5385' }, { headers: this.headers });
+      const response = await axios.post(this.authUrl, { userName, password, applicationId: '5385' },
+        {
+          headers: this.headers,
+          timeout: 30000, // Set timeout to 30 seconds (30000 milliseconds)
+        }
+      );
       return response.data;
     } catch (error) {
       this.handleAuthenticationError(error);
