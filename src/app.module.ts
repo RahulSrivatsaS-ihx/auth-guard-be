@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { IHXSupremeConfig,MediAuthConfig } from './config/database.config';
+import { hospProfileConfig, IHXSupremeConfig,MediAuthConfig } from './config/database.config';
 import { InfoModule } from './info/info.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
@@ -19,6 +19,7 @@ import { UserCreationModule } from './userCreation/userCreation.module';
     }),
     TypeOrmModule.forRoot(MediAuthConfig), // Ensure this line is included
     TypeOrmModule.forRoot(IHXSupremeConfig),
+    TypeOrmModule.forRoot(hospProfileConfig),
     InfoModule, // Ensure this module is imported
     AuthModule,
     FeatureUpdateModule,
