@@ -38,11 +38,12 @@ export class TblApplicationUserEntity {
   @Column({ nullable: true, length: 15 })
   TAU_AltPhoneNumber?: string;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'bit', default: false })
   TAU_IsActive: boolean;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'bit', default: false })
   TAU_IsLocked: boolean;
+
 
   @Column({ nullable: true, default: 0 })
   TAU_FailedAttemptCount?: number;
@@ -59,7 +60,7 @@ export class TblApplicationUserEntity {
   @Column({ type: 'datetime', nullable: true })
   Modifiedon?: Date;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'bit', default: false })
   TAU_HasLoggedIn: boolean;
 
   @Column({ type: 'datetime', nullable: true })
@@ -68,10 +69,10 @@ export class TblApplicationUserEntity {
   @Column({ nullable: true, length: 100 })
   TAU_ModifiedBy?: string;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'bit', default: false })
   TAU_IsMobileVerified: boolean;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'bit', default: false })
   TAU_IsEmailVerified: boolean;
 
   @Column({ type: 'datetime', nullable: true })

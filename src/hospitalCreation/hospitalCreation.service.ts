@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { EntityTbl_Entity } from 'src/info/entity.entity';
 import { EntityPropertyEntity } from 'src/info/entity_Property.entity';
 import { CreateHospitalDto } from './CreateHospitalDto';
-import { ProfileDetailEntity } from './ProfileDetailEntity';
+import { TblProfileDetailEntity } from './ProfileDetailEntity';
 
 @Injectable()
 export class HospitalCreationService {
@@ -17,8 +17,8 @@ export class HospitalCreationService {
     @InjectRepository(EntityPropertyEntity, 'IHXSupremeConnection')
     private readonly entityPropertyRepository: Repository<EntityPropertyEntity>,
 
-    @InjectRepository(ProfileDetailEntity, 'hospProfileConnection')
-    private readonly profileDetailRepository: Repository<ProfileDetailEntity>,
+    @InjectRepository(TblProfileDetailEntity, 'hospProfileConnection')
+    private readonly tblProfileDetailEntity: Repository<TblProfileDetailEntity>,
   ) {}
 
   async hospitalCreation(data: CreateHospitalDto): Promise<void> {

@@ -1,7 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'tblProfileDetail', schema: 'hospProfile' })
-export class ProfileDetailEntity {
+@Entity({ 
+  name: 'tblProfileDetail', 
+  schema: 'hospProfile' // Specify the schema here
+})
+export class TblProfileDetailEntity {
   @PrimaryGeneratedColumn({ name: 'PD_Id' })
   PD_Id: number;
 

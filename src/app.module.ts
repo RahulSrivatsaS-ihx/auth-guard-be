@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { hospProfileConfig, IHXSupremeConfig,MediAuthConfig } from './config/database.config';
+import { IhxProviderConfig, IHXSupremeConfig,MediAuthConfig, ValhallaConfig } from './config/database.config';
 import { InfoModule } from './info/info.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
@@ -19,7 +19,9 @@ import { UserCreationModule } from './userCreation/userCreation.module';
     }),
     TypeOrmModule.forRoot(MediAuthConfig), // Ensure this line is included
     TypeOrmModule.forRoot(IHXSupremeConfig),
-    TypeOrmModule.forRoot(hospProfileConfig),
+    TypeOrmModule.forRoot(ValhallaConfig),
+    TypeOrmModule.forRoot(IhxProviderConfig),
+
     InfoModule, // Ensure this module is imported
     AuthModule,
     FeatureUpdateModule,
@@ -33,6 +35,13 @@ export class AppModule {
   constructor() {
     console.log('Environment file path:', `${process.cwd()}/env/.${process.env.NODE_ENV}.env`);
     console.log('Database Config:', IHXSupremeConfig);
+    console.log('Database Config:', MediAuthConfig);
+    console.log('Database Config:', ValhallaConfig);
+    console.log('Database Config:', IhxProviderConfig);
+
+
+
+
     console.log('Environment Variables:', process.env);
   }
 }
