@@ -18,13 +18,13 @@ export class EntityPropertyEntity {
   EP_ISACTIVE: boolean;
 
   @Column()
-  EP_ADDUSER: string;
+  EP_ADDUSER: number;
 
   @Column()
   EP_CREATEDON: Date;
 
   @Column()
-  EP_MODIFIEDUSER: string;
+  EP_MODIFIEDUSER: number;
 
   @Column()
   EP_MODIFIEDON: Date;

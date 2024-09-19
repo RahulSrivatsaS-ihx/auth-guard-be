@@ -17,9 +17,10 @@ export class TblUserMapRoleEntity {
   @Column()
   TUMR_CreatedBy: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  // @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  // TUMR_CreatedOn: Date;
+  @Column({ name: 'TUMR_CreatedOn', type: 'timestamp', nullable: false })
   TUMR_CreatedOn: Date;
-
   @Column({ nullable: true })
   TUMR_ModifiedBy: string;
 

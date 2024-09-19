@@ -34,13 +34,11 @@ export class FeatureEnablingService {
       }
 
       for (const [propertyName, featureValue] of Object.entries(features)) {
-        // Check if property exists
         const existingProperty = await this.updateRepository.findOne({
           where: { EP_E_ID, EP_PropertyName: propertyName }
         });
 
         if (existingProperty) {
-          // Update the existing property
           await this.updateRepository.update(
             { EP_E_ID, EP_PropertyName: propertyName },
             { EP_PropertyValue: enablement ? 'true' : 'false' }
@@ -54,9 +52,9 @@ export class FeatureEnablingService {
             EP_PropertyName: propertyName,
             EP_PropertyValue: enablement ? 'true' : 'false',
             EP_ISACTIVE: true,
-            EP_ADDUSER: 'Admin',
+            EP_ADDUSER: 1,
             EP_CREATEDON: new Date(),
-            EP_MODIFIEDUSER: 'Admin',
+            EP_MODIFIEDUSER: 1,
             EP_MODIFIEDON: new Date(),
             EP_GroupId: 0,
             EP_LookUpId: 0,
@@ -73,6 +71,6 @@ export class FeatureEnablingService {
       throw error;
     }
 
-    return messages; // Return the collected messages
+    return messages; 
   }
 }

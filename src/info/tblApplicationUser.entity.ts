@@ -20,8 +20,9 @@ export class TblApplicationUserEntity {
   @Column({ length: 255 })
   TAU_LoginName: string;
 
-  @Column({ nullable: true, length: 255 })
-  TAU_Password?: string;
+  @Column({ type: 'varbinary', nullable: true })
+TAU_Password?: Buffer;
+
 
   @Column({ nullable: true })
   TAU_ProviderMasterEntityId?: string;
@@ -43,7 +44,6 @@ export class TblApplicationUserEntity {
 
   @Column({ type: 'bit', default: false })
   TAU_IsLocked: boolean;
-
 
   @Column({ nullable: true, default: 0 })
   TAU_FailedAttemptCount?: number;

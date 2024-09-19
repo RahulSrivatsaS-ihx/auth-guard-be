@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { TblPayerMasterLookUpEntity } from "src/hospitalCreation/TblPayerMasterLookUp.entity";
 import { EntityPropertyEntity } from "src/info/entity_Property.entity";
 import { Repository } from "typeorm";
 
@@ -10,6 +11,8 @@ export class PayerAdditionService {
   constructor(
     @InjectRepository(EntityPropertyEntity, 'IHXSupremeConnection')
     private readonly updatePayerRepository: Repository<EntityPropertyEntity>,
+    @InjectRepository(TblPayerMasterLookUpEntity, 'IhxProviderConnection')
+    private readonly tblPayerMasterLookUpEntity: Repository<TblPayerMasterLookUpEntity>,
   ) {}
 
   async updatePayers(params: {
@@ -67,9 +70,9 @@ export class PayerAdditionService {
           EP_PropertyName: 'ConfiguredPayer',
           EP_PropertyValue: Object.keys(selectedPayers).join(','),
           EP_ISACTIVE: true,
-          EP_ADDUSER: 'Admin',
+          EP_ADDUSER: 1,
           EP_CREATEDON: new Date(),
-          EP_MODIFIEDUSER: 'Admin',
+          EP_MODIFIEDUSER: 1,
           EP_MODIFIEDON: new Date(),
           EP_GroupId: 0,
           EP_LookUpId: 0,

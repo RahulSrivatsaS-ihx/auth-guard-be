@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
 import { randomBytes } from 'crypto';
-import { CreateUserDto, CreateUserDataDto } from './create-user.dto';
+import { CreateUserDto } from './create-user.dto';
 
 @Injectable()
 export class UserCreationService {
@@ -23,17 +23,14 @@ export class UserCreationService {
     const { userData, roles } = createUserDto;
     const { firstName, lastName, username, email, phoneNumber, entityId } = userData;
 
-    // Check if email already exists
-    const existingUser = await this.userCreationRepository.findOne({ where: { TAU_EmailId: email } });
+    const existingUser = await this.userCreationRepository.findOneBy({ TAU_EmailId: email });
     if (existingUser) {
       throw new BadRequestException('Email already exists');
     }
 
-    // Generate random strong password
     const password = this.generateStrongPassword();
     const hashedPassword = await this.hashPassword(password);
 
-    // Create new user entity
     const newUser = this.userCreationRepository.create({
       TAU_FirstName: firstName,
       TAU_LastName: lastName,
@@ -52,11 +49,15 @@ export class UserCreationService {
     this.logger.log(`Creating user with data: ${JSON.stringify(newUser)}`);
 
     // Save user to the database
-    const savedUser = await this.userCreationRepository.save(newUser);
-
-    // Assign roles if provided
-    if (roles) {
-      await this.assignRoles(savedUser.TAU_Id, roles);
+    try {
+      const savedUser = await this.userCreationRepository.save(newUser);
+      this.logger.log('User saved:', savedUser);
+      if (roles) {
+        await this.assignRoles(savedUser.TAU_Id, roles);
+      }
+    } catch (e) {
+      this.logger.error('Error saving user:', e);
+      throw new Error('Error saving user');
     }
 
     // Send the email with the generated password
@@ -69,11 +70,11 @@ export class UserCreationService {
   private async assignRoles(userId: number, roles: Record<string, string>): Promise<void> {
     const roleEntries = Object.entries(roles).map(([roleId, roleName]) => ({
       TUMR_TAU_Id: userId,
-      TUMR_Role: roleName,
-      TUMR_CreatedBy: 'Admin',
-      TUMR_CreatedOn: new Date(),
+      TUMR_Role: roleId,
+      TUMR_CreatedBy: '9214',
+      // TUMR_CreatedOn: new Date(),
     }));
-    
+
     await this.roleAssignRepository.save(roleEntries);
     this.logger.log(`Roles assigned to userId ${userId}: ${JSON.stringify(roleEntries)}`);
   }
@@ -82,17 +83,18 @@ export class UserCreationService {
     return randomBytes(8).toString('hex'); // 16-character hex string
   }
 
-  private async hashPassword(password: string): Promise<string> {
+  private async hashPassword(password: string): Promise<Buffer> {
     const salt = await bcrypt.genSalt();
-    return bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return Buffer.from(hashedPassword); // Store as Buffer
   }
 
   private async sendEmail(email: string, password: string): Promise<void> {
     const transporter = nodemailer.createTransport({
-      service: 'gmail', // Use your email service here
+      service: 'gmail',
       auth: {
         user: 'rahul.srivatsa@ihx.in',
-        pass: '', // Add your email password
+        pass: 'Rahul@277', // Add your email password
       },
     });
 

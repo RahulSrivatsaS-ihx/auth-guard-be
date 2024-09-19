@@ -81,7 +81,7 @@ extra: {
 };
 
 export const IhxProviderConfig: TypeOrmModuleOptions = {
-  name: 'ihxProviderConnection',
+  name: 'IhxProviderConnection',
 
 type: 'mssql', // Change to 'mssql' for SQL Server
 host: process.env.DB_HOST,

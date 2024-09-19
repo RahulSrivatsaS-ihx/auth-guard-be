@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity({ 
   name: 'TblPayerMasterLookUp', 
-  schema: 'IHXProvider' // Specify the schema
+  schema: 'dbo' // Specify the schema
 })
 export class TblPayerMasterLookUpEntity {
   @PrimaryGeneratedColumn()
