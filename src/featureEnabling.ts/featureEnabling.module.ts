@@ -7,7 +7,6 @@ import { FeatureEnablingController } from "./featureEnabling.controller";
 
 @Module({
   imports: [TypeOrmModule.forFeature([EntityPropertyEntity],'IHXSupremeConnection'),
-  TypeOrmModule.forFeature([EntityPropertyEntity],'IhxProviderConnection')
 ],
 
   providers: [FeatureEnablingService],

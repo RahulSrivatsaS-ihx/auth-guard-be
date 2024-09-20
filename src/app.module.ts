@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { FeatureUpdateModule } from './featureEnabling.ts/featureEnabling.module';
 import { PayerAdditionModule } from './payerAddition/payerAddition.module';
 import { UserCreationModule } from './userCreation/userCreation.module';
+import { HospitalCreationModule } from './hospitalCreation/hospitalCreation.module';
 
 @Module({
   imports: [
@@ -26,10 +27,11 @@ import { UserCreationModule } from './userCreation/userCreation.module';
     AuthModule,
     FeatureUpdateModule,
     PayerAdditionModule,
-    UserCreationModule
+    UserCreationModule,
+    HospitalCreationModule,
   ],
   controllers: [AppController],
-  providers: [AppService,AuthModule,FeatureUpdateModule,PayerAdditionModule,UserCreationModule],
+  providers: [AppService,AuthModule,FeatureUpdateModule,PayerAdditionModule,UserCreationModule,HospitalCreationModule],
 })
 export class AppModule {
   constructor() {
@@ -38,10 +40,6 @@ export class AppModule {
     console.log('Database Config:', MediAuthConfig);
     console.log('Database Config:', ValhallaConfig);
     console.log('Database Config:', IhxProviderConfig);
-
-
-
-
     console.log('Environment Variables:', process.env);
   }
 }

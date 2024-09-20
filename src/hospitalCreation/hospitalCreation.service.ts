@@ -1,14 +1,16 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common'; // Import Logger
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { EntityTbl_Entity } from 'src/info/entity.entity';
 import { EntityPropertyEntity } from 'src/info/entity_Property.entity';
+import { Repository } from 'typeorm';
 import { CreateHospitalDto } from './CreateHospitalDto';
 import { TblProfileDetailEntity } from './ProfileDetailEntity';
-
+import { TblPayerMasterLookUpEntity } from './TblPayerMasterLookUp.entity';
 @Injectable()
 export class HospitalCreationService {
-  private readonly logger = new Logger(HospitalCreationService.name);
+  // Define a constant for similarity threshold
+  private readonly SIMILARITY_THRESHOLD = 90;
+  private readonly logger = new Logger(HospitalCreationService.name); // Initialize the logger
 
   constructor(
     @InjectRepository(EntityTbl_Entity, 'IHXSupremeConnection')
@@ -17,85 +19,111 @@ export class HospitalCreationService {
     @InjectRepository(EntityPropertyEntity, 'IHXSupremeConnection')
     private readonly entityPropertyRepository: Repository<EntityPropertyEntity>,
 
-    @InjectRepository(TblProfileDetailEntity, 'hospProfileConnection')
-    private readonly tblProfileDetailEntity: Repository<TblProfileDetailEntity>,
+    @InjectRepository(TblProfileDetailEntity, 'ValhallaConnection')
+    private readonly profileDetailRepository: Repository<TblProfileDetailEntity>,
+
+    @InjectRepository(TblPayerMasterLookUpEntity, 'IhxProviderConnection')
+    private readonly tblPayerMasterLookUpEntityL: Repository<TblPayerMasterLookUpEntity>,
   ) {}
 
   async hospitalCreation(data: CreateHospitalDto): Promise<void> {
-    // Check for duplicates in ProfileDetailEntity
-    // const duplicateEntity = await this.profileDetailRepository.findOne({
-    //   where: [
-    //     { PD_RohiniId: data.rohiniCode },
-    //     { PD_Email: data.hospitalMailId }
-    //   ],
-    // });
+    const emailExists = await this.entityRepository.findOne({
+        where: { E_EmailAddress: data.hospitalMailId },
+    });
 
-    // if (duplicateEntity) {
-    //   throw new BadRequestException('Hospital with given Rohini ID or email already exists');
-    // }
+    if (emailExists) {
+        // throw new BadRequestException(`Hospital with email ${data.hospitalMailId} already exists.`);
+    }
 
-    // // Check for duplicates in EntityPropertyEntity (for username)
-    // const duplicateUsername = await this.entityPropertyRepository.findOne({
-    //   where: { EP_PropertyValue: data.userName },
-    // });
+    const rohiniIdExists = await this.entityPropertyRepository.findOne({
+        where: { EP_PropertyName: 'TMH_RohiniCode', EP_ISACTIVE: true, EP_PropertyValue: data.rohiniCode }
+    });
 
-    // if (duplicateUsername) {
-    //   throw new BadRequestException('Username already exists');
-    // }
+    if (rohiniIdExists) {
+        // throw new BadRequestException(`RohiniId with ${data.rohiniCode} already exists.`);
+    }
 
-    // // Insert into EntityTbl_Entity
-    // const newEntity = this.entityRepository.create({
-    //   E_FullName: data.hospitalName,
-    //   E_PrimaryAddress: data.address,
-    //   E_CityId: data.cityName,
-    //   E_StateId: data.stateName,
-    //   E_PinCode: data.pinCode,
-    //   E_EmailAddress: data.hospitalMailId,
-    //   E_ContactName: `${data.firstName} ${data.lastName}`,
-    //   E_MobileNumber: data.phoneNumber,
-    //   E_RohiniCode: data.rohiniCode,
-    //   E_TollFreeNo: data.payerHospitalId || '',
-    //   E_ISACTIVE: true,
-    //   E_CREATEDON: new Date(),
-    //   E_ADDUSER: data.userName,
-    // });
+    this.logger.log('Existing mail id:', emailExists);
 
-    // const savedEntity = await this.entityRepository.save(newEntity);
-    // const savedEntityId = z.E_Id;
+    const existingHospitals = await this.entityRepository.find();
+    const existingRohiniCodes = await this.entityPropertyRepository.find({
+        where: { EP_PropertyName: 'TMH_RohiniCode', EP_ISACTIVE: true }
+    });
 
-    // // Insert into EntityPropertyEntity
-    // const newEntityProperty = this.entityPropertyRepository.create({
-    //   EP_E_ID: savedEntityId.toString(),
-    //   EP_PropertyName: 'Username',
-    //   EP_PropertyValue: data.userName,
-    //   EP_ISACTIVE: true,
-    //   EP_ADDUSER: data.userName,
-    //   EP_CREATEDON: new Date(),
-    //   EP_MODIFIEDUSER: data.userName,
-    //   EP_MODIFIEDON: new Date(),
-    //   EP_GroupId: 1, // Example group ID, adjust as needed
-    //   EP_LookUpId: 1, // Example lookup ID, adjust as needed
-    //   ProductCode: 'HOSP123', // Example product code, adjust as needed
-    // });
+    let similarHospitals: any = [];
 
-    // await this.entityPropertyRepository.save(newEntityProperty);
+    for (const hospital of existingHospitals) {
+        const hospitalNameSimilarity = this.calculateSimilarity(hospital.E_FullName, data.hospitalName);
+        const addressSimilarity = this.calculateSimilarity(hospital.E_PrimaryAddress, data.address);
+        const pinCodeSimilarity = this.calculateSimilarity(hospital.E_PinCode, data.pinCode);
+        const emailSimilarity = this.calculateSimilarity(hospital.E_EmailAddress, data.hospitalMailId);
 
-    // // Insert into ProfileDetailEntity
-    // const newProfileDetail = this.profileDetailRepository.create({
-    //   PD_FullName: `${data.firstName} ${data.lastName}`,
-    //   PD_Email: data.hospitalMailId,
-    //   PD_RohiniId: data.rohiniCode,
-    //   PD_StreetAddress: data.address,
-    //   PD_Pincode: data.pinCode,
-    //   PD_CityId: data.cityName, // Adjust if necessary
-    //   PD_StateId: data.stateName, // Adjust if necessary
-    //   PD_Latitude: null, // Set accordingly
-    //   PD_Longitude: null, // Set accordingly
-    //   PD_IsActive: true,
-    //   PD_CreatedOn: new Date(),
-    //   PD_CreatedBy: data.userName,
-    // });
+        // Always check the Rohini code, regardless of other similarities
+        const matchedRohiniCode = existingRohiniCodes.find(
+            rohini => Number(rohini.EP_E_ID) === hospital.E_Id
+        );
 
-    // await this.profileDetailRepository.save(newProfileDetail);
+        const rohiniCode = matchedRohiniCode ? matchedRohiniCode.EP_PropertyValue : null;
+        const rohiniCodeSimilarity = this.calculateSimilarity(rohiniCode, data.rohiniCode);
+
+        // Push to similarHospitals based on any relevant similarities
+        if (
+            hospitalNameSimilarity > this.SIMILARITY_THRESHOLD || 
+            addressSimilarity > this.SIMILARITY_THRESHOLD || 
+            pinCodeSimilarity > this.SIMILARITY_THRESHOLD ||
+            rohiniCodeSimilarity > this.SIMILARITY_THRESHOLD // Check Rohini code similarity too
+        ) {
+            similarHospitals.push({
+                referenceId: hospital.E_Id,
+                hospitalName: hospital.E_FullName,
+                address: hospital.E_PrimaryAddress,
+                pinCode: hospital.E_PinCode,
+                email: hospital.E_EmailAddress,
+                rohiniCode,
+                hospitalNameSimilarity,
+                addressSimilarity,
+                pinCodeSimilarity,
+                emailSimilarity,
+                rohiniCodeSimilarity
+            });
+        }
+    }
+
+    this.logger.log('Similar hospitals:', similarHospitals);
+
+    if (similarHospitals.length > 0) {
+        throw new BadRequestException({
+            message: 'Similar hospitals found with the following similarity percentages:',
+            similarHospitals,
+        });
+    }
+
+    try {
+        // Logic to create a new hospital
+        this.logger.log('Hospital created successfully');
+    } catch (error) {
+        this.logger.error('Error while creating hospital:', error.message);
+        throw new BadRequestException('Failed to create hospital.');
+    }
+}
+
+
+  // Similarity calculation helper function
+  calculateSimilarity(value1: string, value2: string): number {
+    if (!value1 || !value2) return 0;
+
+    const value1Lower = value1.toLowerCase();
+    const value2Lower = value2.toLowerCase();
+
+    let matches = 0;
+    const length = Math.max(value1Lower.length, value2Lower.length);
+
+    for (let i = 0; i < length; i++) {
+      if (value1Lower[i] === value2Lower[i]) {
+        matches++;
+      }
+    }
+
+    return (matches / length) * 100;
   }
 }

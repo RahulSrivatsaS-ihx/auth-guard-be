@@ -7,11 +7,12 @@ export class HospitalCreationController {
   constructor(private readonly hospitalCreationService: HospitalCreationService) {}
 
   @Post()
-  async createHospital(@Body() body: CreateHospitalDto): Promise<void> {
+  async createHospital(@Body() body: CreateHospitalDto): Promise<{ message: string }> {
     try {
       await this.hospitalCreationService.hospitalCreation(body);
+      return { message: 'Hospital created successfully' }; // Success response
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error.message); // Forward error message
     }
   }
 }

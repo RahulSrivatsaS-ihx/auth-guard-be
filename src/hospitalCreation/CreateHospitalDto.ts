@@ -1,21 +1,25 @@
-import { IsNotEmpty, IsEmail, IsString, Matches } from 'class-validator';
+import { IsNotEmpty, IsEmail, IsString, Matches, IsObject, IsPhoneNumber, IsOptional, IsBoolean } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateHospitalDto {
+  @IsNotEmpty()
+  @IsBoolean()
+  isBulkUpload: boolean;
+
+  @IsOptional()
+  file: any; // You can specify a more specific type if you know the structure (e.g., Express.Multer.File)
+
   @IsNotEmpty()
   @IsString()
   hospitalName: string;
 
+  @IsString()
+  @IsOptional() // Marking it optional since the request example allows this field to be missing
+  payerHospitalId: string;
+
   @IsNotEmpty()
   @IsString()
   address: string;
-
-  @IsNotEmpty()
-  @IsString()
-  cityName: string;
-
-  @IsNotEmpty()
-  @IsString()
-  stateName: string;
 
   @IsNotEmpty()
   @Matches(/^\d{6}$/, { message: 'Pin code must be 6 digits' })
@@ -28,6 +32,18 @@ export class CreateHospitalDto {
   @IsNotEmpty()
   @IsString()
   rohiniCode: string;
+
+  @IsNotEmpty()
+  @IsString()
+  stateName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  cityName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  userName: string;
 
   @IsNotEmpty()
   @IsString()
@@ -46,9 +62,6 @@ export class CreateHospitalDto {
   phoneNumber: string;
 
   @IsNotEmpty()
-  @IsString()
-  userName: string;
-
-  @IsString()
-  payerHospitalId: string;
+  @IsObject({ message: 'userRoles must be an object with role IDs and names' })
+  userRoles: Record<string, string>;
 }
