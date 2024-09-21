@@ -159,7 +159,6 @@ export class HospitalCreationService {
         // Create Payer Master LookUp entry
 
         const newHospitalPayerMasterLookUp = this.tblPayerMasterLookUpEntity.create({
-            ParentId: Number(data.payerHospitalId),
             MasterType: 9,
             PayerMasterId: data.payerHospitalId,
             PayerId: String(getPayerId(data.payerHospitalId)),
