@@ -11,6 +11,7 @@ import { FeatureUpdateModule } from './featureEnabling.ts/featureEnabling.module
 import { PayerAdditionModule } from './payerAddition/payerAddition.module';
 import { UserCreationModule } from './userCreation/userCreation.module';
 import { HospitalCreationModule } from './hospitalCreation/hospitalCreation.module';
+import { LookupModule } from './getLocationCodes/getLocationCodes.module';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { HospitalCreationModule } from './hospitalCreation/hospitalCreation.modu
     HospitalCreationModule,
   ],
   controllers: [AppController],
-  providers: [AppService,AuthModule,FeatureUpdateModule,PayerAdditionModule,UserCreationModule,HospitalCreationModule],
+  providers: [AppService,AuthModule,FeatureUpdateModule,PayerAdditionModule,UserCreationModule,HospitalCreationModule,LookupModule],
 })
 export class AppModule {
   constructor() {

@@ -93,13 +93,13 @@ export class UserCreationService {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'rahul.srivatsa@ihx.in',
-        pass: 'Rahul@277', // Add your email password
+        user: 'testing@ihx.in',
+        pass: 'eoxeioafmyqveeql', // Add your email password
       },
     });
 
     const mailOptions = {
-      from: 'rahul.srivatsa@ihx.in',
+      from: 'testing@ihx.in',
       to: email,
       subject: 'Your Account Password',
       text: `Your account has been created. Your password is: ${password}`,

@@ -1,9 +1,9 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'ENTITY' }) // Match table name
 export class EntityTbl_Entity {
 
-  @PrimaryColumn({ name: 'E_Id' })
+  @PrimaryGeneratedColumn()
   E_Id: number;
 
   @Column({ name: 'E_ParentId', nullable: true })

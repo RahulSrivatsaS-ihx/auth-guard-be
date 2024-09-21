@@ -15,7 +15,7 @@ export class TblProfileDetailEntity {
   PD_DisplayName: string;
 
   @Column({ name: 'PD_SupremeId', type: 'int', nullable: true })
-  PD_SupremeId: number;
+  PD_SupremeId: string;
 
   @Column({ name: 'PD_GroupId', type: 'int', nullable: true })
   PD_GroupId: number;
@@ -36,13 +36,13 @@ export class TblProfileDetailEntity {
   PD_Pincode: string;
 
   @Column({ name: 'PD_StateId', type: 'int', nullable: true })
-  PD_StateId: number;
+  PD_StateId: string;
 
   @Column({ name: 'PD_CityId', type: 'int', nullable: true })
-  PD_CityId: number;
+  PD_CityId: string;
 
   @Column({ name: 'PD_LocationId', type: 'int', nullable: true })
-  PD_LocationId: number;
+  PD_LocationId: string;
 
   @Column({ name: 'PD_Latitude', type: 'decimal', precision: 10, scale: 8, nullable: true })
   PD_Latitude: number;

@@ -9,7 +9,7 @@ export class TblPayerMasterLookUpEntity {
   id: number; // Primary key column
 
   @Column({ nullable: true })
-  PayerId?: number;
+  PayerId?: string;
 
   @Column({ nullable: true })
   MasterType?: number;
@@ -24,7 +24,7 @@ export class TblPayerMasterLookUpEntity {
   MAMasterTableName?: string;
 
   @Column({ nullable: true })
-  MaMasterId?: number;
+  MaMasterId?: string;
 
   @Column({ nullable: true })
   ParentId?: number;

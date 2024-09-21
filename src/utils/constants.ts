@@ -84,3 +84,19 @@ export const QUERY_CONSTANTS = {
   ]
 
 };
+
+
+export const payerHospitalIdMap = {
+  'hs': '516571',
+  'digit': '516572',
+  'ejic': '516574',
+};
+
+export const getPayerId = (payerHospitalId:any) => {
+  const key = payerHospitalId.startsWith('hs') ? 'hs' :
+              /^\d/.test(payerHospitalId) ? 'digit' :
+              /^ejic/i.test(payerHospitalId) ? 'ejic' :
+              'default';
+
+  return payerHospitalIdMap[key] || 'default_value'; // Handle unmatched cases
+};

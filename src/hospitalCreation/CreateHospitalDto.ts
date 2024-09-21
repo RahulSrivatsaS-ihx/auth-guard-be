@@ -14,7 +14,7 @@ export class CreateHospitalDto {
   hospitalName: string;
 
   @IsString()
-  @IsOptional() // Marking it optional since the request example allows this field to be missing
+  @IsOptional() // Marking it optional since the request example allows this field to be missin
   payerHospitalId: string;
 
   @IsNotEmpty()
@@ -45,23 +45,24 @@ export class CreateHospitalDto {
   @IsString()
   userName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  firstName: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // firstName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  lastName: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // lastName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  gender: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // gender: string;
 
   @IsNotEmpty()
   @Matches(/^\d{10}$/, { message: 'Phone number must be 10 digits' })
   phoneNumber: string;
 
-  @IsNotEmpty()
-  @IsObject({ message: 'userRoles must be an object with role IDs and names' })
-  userRoles: Record<string, string>;
+ 
+  @IsOptional()
+  @IsObject()
+  roles?: Record<string, string>; // Key-value pair for roleId and roleName
 }
