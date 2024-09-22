@@ -22,7 +22,7 @@ export class UserCreationService {
   async createUser(createUserDto: CreateUserDto): Promise<string> {
     const { userData, roles } = createUserDto;
     const { firstName, lastName, username, email, phoneNumber, entityId } = userData;
-
+console.log('createUserDteo',createUserDto)
     const existingUser = await this.userCreationRepository.findOneBy({ TAU_EmailId: email });
     if (existingUser) {
       throw new BadRequestException('Email already exists');
@@ -53,6 +53,7 @@ export class UserCreationService {
       const savedUser = await this.userCreationRepository.save(newUser);
       this.logger.log('User saved:', savedUser);
       if (roles) {
+        console.log('roles',roles)
         await this.assignRoles(savedUser.TAU_Id, roles);
       }
     } catch (e) {
@@ -68,6 +69,7 @@ export class UserCreationService {
   }
 
   private async assignRoles(userId: number, roles: Record<string, string>): Promise<void> {
+    console.log('in assignROle',userId,roles)
     const roleEntries = Object.entries(roles).map(([roleId, roleName]) => ({
       TUMR_TAU_Id: userId,
       TUMR_Role: roleId,

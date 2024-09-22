@@ -1,5 +1,5 @@
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
-import { HospitalCreationService } from './hospitalCreation.service';
+import { HospitalCreationService } from './hospitalCreations.service';
 import { CreateHospitalDto } from './CreateHospitalDto';
 
 @Controller('hospitalCreation')

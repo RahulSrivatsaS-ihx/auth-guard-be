@@ -12,6 +12,8 @@ import { TblUserMapRoleEntity } from "./TblUserMap_Role.entity";
 
   providers: [UserCreationService],
   controllers: [UserCreationController],
+  exports: [UserCreationService],
+
 })
 export class UserCreationModule {}
 
