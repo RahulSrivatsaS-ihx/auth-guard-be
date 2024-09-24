@@ -9,6 +9,9 @@ export class CreateHospitalDto {
   @IsOptional()
   file: any; // You can specify a more specific type if you know the structure (e.g., Express.Multer.File)
 
+@IsOptional()
+isCashlessPayer: boolean;
+
   @IsNotEmpty()
   @IsString()
   hospitalName: string;
@@ -41,9 +44,9 @@ export class CreateHospitalDto {
   @IsString()
   cityName: string;
 
-  @IsNotEmpty()
-  @IsString()
-  userName: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // userName: string;
 
   // @IsNotEmpty()
   // @IsString()
@@ -57,9 +60,9 @@ export class CreateHospitalDto {
   // @IsString()
   // gender: string;
 
-  @IsNotEmpty()
-  @Matches(/^\d{10}$/, { message: 'Phone number must be 10 digits' })
-  phoneNumber: string;
+  // @IsNotEmpty()
+  // @Matches(/^\d{10}$/, { message: 'Phone number must be 10 digits' })
+  // phoneNumber: string;
 
  
   @IsOptional()

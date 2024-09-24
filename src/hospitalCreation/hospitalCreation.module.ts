@@ -19,8 +19,6 @@ import { UserCreationModule } from 'src/userCreation/userCreation.module';
   TypeOrmModule.forFeature([TblProfileDetailEntity], 'ValhallaConnection') ,
   TypeOrmModule.forFeature([TblPayerMasterLookUpEntity],'IhxProviderConnection'),
   TypeOrmModule.forFeature([TblLookupEntity],'IHXSupremeConnection'),UserCreationModule
-
-
 ],
 
   providers: [HospitalCreationService, SimilarityCheckService, HospitalDatabaseService,LookupService],

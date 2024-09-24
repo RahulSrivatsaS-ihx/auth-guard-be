@@ -33,7 +33,7 @@ export class PayerAdditionService {
       else {
         console.log('Processing non-government payers...'); // Log this to debug
         const { supremeId, PayerProviderId } = params as NonGovernmentPayerDTO;
-        // messages.push(...await this.processNonGovernmentPayers(supremeId, PayerProviderId));
+        messages.push(...await this.processNonGovernmentPayers(supremeId, PayerProviderId));
       }
     } catch (error) {
       this.logger.error('Failed to update payers', error.stack);
@@ -112,82 +112,82 @@ export class PayerAdditionService {
     return messages;
 }
 
-// private async processNonGovernmentPayers(supremeId: string, PayerProviderId: string): Promise<string[]> {
-//   const messages: string[] = [];
+private async processNonGovernmentPayers(supremeId: string, PayerProviderId: string): Promise<string[]> {
+  const messages: string[] = [];
 
-//   const existingEntity = await this.updatePayerRepository.findOne({
-//       where: { EP_E_ID: supremeId }
-//   });
+  const existingEntity = await this.updatePayerRepository.findOne({
+      where: { EP_E_ID: supremeId }
+  });
 
-//   if (!existingEntity) {
-//       this.logger.error(`Entity with supremeId ${supremeId} not found.`);
-//       throw new Error(`Entity with supremeId ${supremeId} not found.`);
-//   }
+  if (!existingEntity) {
+      this.logger.error(`Entity with supremeId ${supremeId} not found.`);
+      throw new Error(`Entity with supremeId ${supremeId} not found.`);
+  }
 
-//   // Check for existing row in tblPayerMasterLookUpEntity
-//   const existingLookup = await this.tblPayerMasterLookUpEntity.findOne({ where: { PayerMasterId: PayerProviderId } });
+  // Check for existing row in tblPayerMasterLookUpEntity
+  const existingLookup = await this.tblPayerMasterLookUpEntity.findOne({ where: { PayerMasterId: PayerProviderId } });
 
-//   if (existingLookup) {
-//       // If it exists, update IsActive to true
-//       existingLookup.IsActive = true;
-//       await this.tblPayerMasterLookUpEntity.save(existingLookup);
-//       messages.push(`Updated IsActive to true for existing PayerMasterId ${PayerProviderId}`);
-//   } else {
-//       // Create a new row for PayerMasterLookUp
-//       const insertNewRowPayerMasterLookup = this.tblPayerMasterLookUpEntity.create({
-//           MasterType: 9,
-//           PayerMasterId: PayerProviderId,
-//           PayerId: String(getPayerId(PayerProviderId)),
-//           MAMasterTableName: 'pmr.entity',
-//           MaMasterId: supremeId,
-//           IsActive: true,
-//           CreatedOn: new Date(),
-//           ModifiedOn: new Date(),
-//           Createdby: 1,
-//       });
+  if (existingLookup) {
+      // If it exists, update IsActive to true
+      existingLookup.IsActive = true;
+      await this.tblPayerMasterLookUpEntity.save(existingLookup);
+      messages.push(`Updated IsActive to true for existing PayerMasterId ${PayerProviderId}`);
+  } else {
+      // Create a new row for PayerMasterLookUp
+      const insertNewRowPayerMasterLookup = this.tblPayerMasterLookUpEntity.create({
+          MasterType: 9,
+          PayerMasterId: PayerProviderId,
+          PayerId: String(getPayerId(PayerProviderId)),
+          MAMasterTableName: 'pmr.entity',
+          MaMasterId: supremeId,
+          IsActive: true,
+          CreatedOn: new Date(),
+          ModifiedOn: new Date(),
+          Createdby: 1,
+      });
 
-//       await this.tblPayerMasterLookUpEntity.save(insertNewRowPayerMasterLookup);
-//       messages.push(`Inserted new row in tblPayerMasterLookUpEntity for supremeId ${supremeId}`);
-//   }
+      await this.tblPayerMasterLookUpEntity.save(insertNewRowPayerMasterLookup);
+      messages.push(`Inserted new row in tblPayerMasterLookUpEntity for supremeId ${supremeId}`);
+  }
 
-//   // Fetch the "ConfiguredPayer" property
-//   const configuredPayer = await this.updatePayerRepository.findOne({
-//       where: { EP_E_ID: supremeId, EP_PropertyName: 'ConfiguredPayer' }
-//   });
+  // Fetch the "ConfiguredPayer" property
+  const configuredPayer = await this.updatePayerRepository.findOne({
+      where: { EP_E_ID: supremeId, EP_PropertyName: 'ConfiguredPayer' }
+  });
 
-//   if (configuredPayer) {
-//       let currentPayers = configuredPayer.EP_PropertyValue ? configuredPayer.EP_PropertyValue.split(',') : [];
+  if (configuredPayer) {
+      let currentPayers = configuredPayer.EP_PropertyValue ? configuredPayer.EP_PropertyValue.split(',') : [];
       
-//       if (!currentPayers.includes(PayerProviderId)) {
-//           currentPayers.push(PayerProviderId);
-//           messages.push(`Added ${PayerProviderId} to ConfiguredPayer for supremeId ${supremeId}`);
-//       }
+      if (!currentPayers.includes(PayerProviderId)) {
+          currentPayers.push(PayerProviderId);
+          messages.push(`Added ${PayerProviderId} to ConfiguredPayer for supremeId ${supremeId}`);
+      }
 
-//       await this.updatePayerRepository.update(
-//           { EP_E_ID: supremeId, EP_PropertyName: 'ConfiguredPayer' },
-//           { EP_PropertyValue: currentPayers.join(',') }
-//       );
+      await this.updatePayerRepository.update(
+          { EP_E_ID: supremeId, EP_PropertyName: 'ConfiguredPayer' },
+          { EP_PropertyValue: currentPayers.join(',') }
+      );
 
-//   } else {
-//       const newProperty = this.updatePayerRepository.create({
-//           EP_E_ID: supremeId,
-//           EP_PropertyName: 'ConfiguredPayer',
-//           EP_PropertyValue: PayerProviderId,
-//           EP_ISACTIVE: true,
-//           EP_ADDUSER: 1,
-//           EP_CREATEDON: new Date(),
-//           EP_MODIFIEDUSER: 1,
-//           EP_MODIFIEDON: new Date(),
-//           EP_GroupId: 0,
-//           EP_LookUpId: 0,
-//           ProductCode: 'DefaultProductCode'
-//       });
+  } else {
+      const newProperty = this.updatePayerRepository.create({
+          EP_E_ID: supremeId,
+          EP_PropertyName: 'ConfiguredPayer',
+          EP_PropertyValue: PayerProviderId,
+          EP_ISACTIVE: true,
+          EP_ADDUSER: 1,
+          EP_CREATEDON: new Date(),
+          EP_MODIFIEDUSER: 1,
+          EP_MODIFIEDON: new Date(),
+          EP_GroupId: 0,
+          EP_LookUpId: 0,
+          ProductCode: 'DefaultProductCode'
+      });
 
-//       await this.updatePayerRepository.save(newProperty);
-//       messages.push(`Inserted new ConfiguredPayer property for supremeId ${supremeId}`);
-//   }
+      await this.updatePayerRepository.save(newProperty);
+      messages.push(`Inserted new ConfiguredPayer property for supremeId ${supremeId}`);
+  }
 
-//   return messages;
-// }
+  return messages;
+}
 
 }

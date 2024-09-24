@@ -8,7 +8,6 @@ import { TblPayerMasterLookUpEntity } from './TblPayerMasterLookUp.entity';
 import { CreateHospitalDto } from './CreateHospitalDto';
 import { LookupService } from 'src/getLocationCodes/getLocationCodes.service';
 import { getPayerId } from 'src/utils/constants';
-import { promises } from 'dns';
 
 @Injectable()
 export class HospitalDatabaseService {
@@ -30,24 +29,25 @@ export class HospitalDatabaseService {
     private readonly lookupService: LookupService,
   ) {}
 
- async checkExistingMailId(mailId:string):Promise<any>{
-    const emailExists = await this.entityRepository.findOne({
-        where: { E_EmailAddress: mailId },
+  async checkExistingData(mailId: string, rohiniCode: string): Promise<{ emailExists: boolean; rohiniExists: boolean }> {
+    const emailExists = await this.entityRepository.findOne({ where: { E_EmailAddress: mailId } });
+    const rohiniExists = await this.entityPropertyRepository.findOne({
+      where: { EP_PropertyName: 'TMH_RohiniCode', EP_ISACTIVE: true, EP_PropertyValue: rohiniCode },
     });
-    if (emailExists) {
-        throw new BadRequestException(`Hospital with email ${mailId} already exists.`);
-    }
- }
-  
- async checkExistingRohiniCode(rohiniCode: string):Promise<any>{
-  const rohiniCodeExists = await this.entityPropertyRepository.findOne({
-        where: { EP_PropertyName: 'TMH_RohiniCode', EP_ISACTIVE: true, EP_PropertyValue: rohiniCode },
-    });
-    if (rohiniCodeExists) {
-        throw new BadRequestException(`Rohini Code ${rohiniCode} already exists.`);
- }}
+    return { emailExists: !!emailExists, rohiniExists: !!rohiniExists };
+  }
 
-  async createHospitalAndProperties(data: CreateHospitalDto): Promise<any> {
+  async getExistingHospitalsAndRohiniCodes(): Promise<{ hospitals: EntityTbl_Entity[]; }> {
+    const hospitals = await this.entityRepository.find();
+    return { hospitals};
+  }
+
+  async getHospitalDetails(hospitalId: number): Promise<EntityTbl_Entity> {
+    return this.entityRepository.findOne({ where: { E_Id: (hospitalId) } });
+  }
+
+
+  async createHospitalAndProperties(data: CreateHospitalDto): Promise<number> {
     const [cityCode, stateCode] = await Promise.all([
       this.lookupService.findLocationByValue('city', data.cityName),
       this.lookupService.findLocationByValue('state', data.stateName),
@@ -86,37 +86,20 @@ export class HospitalDatabaseService {
       return await this.entityRepository.save(newHospital);
     } catch (error) {
       this.logger.error('Error creating hospital:', error);
-      throw new BadRequestException(
-        'Error creating hospital: ' + error.message,
-      );
+      throw new BadRequestException('Error creating hospital: ' + error.message);
     }
   }
 
-  private async createEntityProperties(
-    hospitalId: number,
-    rohiniCode: string,
-  ): Promise<void> {
+  private async createEntityProperties(hospitalId: number, rohiniCode: string): Promise<void> {
     try {
       const entityProperties = [
         { EP_PropertyName: 'TMH_RohiniCode', EP_PropertyValue: rohiniCode },
         { EP_PropertyName: 'IsMAIntegrationEnabled', EP_PropertyValue: 'true' },
-        {
-          EP_PropertyName: 'IsManualRedirectionToIHX',
-          EP_PropertyValue: 'true',
-        },
-        {
-          EP_PropertyName: 'IsForcedRedirectionToIHX',
-          EP_PropertyValue: 'true',
-        },
+        { EP_PropertyName: 'IsManualRedirectionToIHX', EP_PropertyValue: 'true' },
+        { EP_PropertyName: 'IsForcedRedirectionToIHX', EP_PropertyValue: 'true' },
         { EP_PropertyName: 'IsNewAutomationEnabled', EP_PropertyValue: 'true' },
-        {
-          EP_PropertyName: 'IsNewMailboxConfigEnabled',
-          EP_PropertyValue: 'true',
-        },
-        {
-          EP_PropertyName: 'DefaultConfiguredPayerId',
-          EP_PropertyValue: '516572',
-        },
+        { EP_PropertyName: 'IsNewMailboxConfigEnabled', EP_PropertyValue: 'true' },
+        { EP_PropertyName: 'DefaultConfiguredPayerId', EP_PropertyValue: '516572' },
         { EP_PropertyName: 'ConfiguredPayer', EP_PropertyValue: '523844' },
       ];
 
@@ -136,55 +119,64 @@ export class HospitalDatabaseService {
       await Promise.all(propertyPromises);
     } catch (error) {
       this.logger.error('Error creating entity properties:', error);
-      throw new BadRequestException(
-        'Error creating entity properties: ' + error.message,
-      );
+      throw new BadRequestException('Error creating entity properties: ' + error.message);
     }
   }
 
-  private async createPayerMasterLookUp(
-    hospitalId: number,
-    data: CreateHospitalDto,
-  ): Promise<void> {
+  public async createPayerMasterLookUp(hospitalId: number, data: CreateHospitalDto): Promise<void> {
     try {
-      const newHospitalPayerMasterLookUp =
-        this.tblPayerMasterLookUpEntity.create({
-          MasterType: 9,
-          PayerMasterId: data.payerHospitalId,
-          PayerId: String(getPayerId(data.payerHospitalId)),
-          PayerMasterValue: data.hospitalName,
-          MAMasterTableName: 'pmr.entity',
-          MaMasterId: String(hospitalId),
-          IsActive: true,
-          CreatedOn: new Date(),
-          ModifiedOn: new Date(),
-          Createdby: 1,
-          // MasterType: 9,
-          // PayerMasterId: data.payerHospitalId,
-          // PayerId: String(getPayerId(data.payerHospitalId)),
-          // PayerMasterValue: data.hospitalName,
-          // MAMasterTableName: 'pmr.entity',
-          // MaMasterId: String(hospitalId),
-          // IsActive: true,
-          // CreatedOn: new Date(),
-          // ModifiedOn: new Date(),
-          // Createdby: 1,
-        });
+
+      const existingLookup = await this.tblPayerMasterLookUpEntity.findOne({ where: { PayerMasterId: String(hospitalId) } });
+
+      if (existingLookup) {
+          // If it exists, update IsActive to true
+          existingLookup.IsActive = true;
+          await this.tblPayerMasterLookUpEntity.save(existingLookup);
+      } else {
+      const newHospitalPayerMasterLookUp = this.tblPayerMasterLookUpEntity.create({
+        MasterType: 9,
+        PayerMasterId: data.payerHospitalId,
+        PayerId: String(getPayerId(data.payerHospitalId)),
+        PayerMasterValue: data.hospitalName,
+        MAMasterTableName: 'pmr.entity',
+        MaMasterId: String(hospitalId),
+        IsActive: true,
+        CreatedOn: new Date(),
+        ModifiedOn: new Date(),
+        Createdby: 1,
+      });
       await this.tblPayerMasterLookUpEntity.save(newHospitalPayerMasterLookUp);
+    }
     } catch (error) {
       this.logger.error('Error creating Payer Master LookUp:', error);
-      throw new BadRequestException(
-        'Error creating Payer Master LookUp: ' + error.message,
-      );
+      throw new BadRequestException('Error creating Payer Master LookUp: ' + error.message);
     }
   }
 
-  private async createProfileDetail(
-    hospitalId: number,
-    data: CreateHospitalDto,
-    cityCode: any,
-    stateCode: any,
-  ): Promise<void> {
+
+public async updateConfiguredPayer(hospitalId: number, payerId: string): Promise<void> {
+  try {
+    const configuredPayer = await this.entityPropertyRepository.findOne({
+      where: { EP_E_ID: String(hospitalId), EP_PropertyName: 'ConfiguredPayer' }})
+      if (configuredPayer) {
+        let currentPayers = configuredPayer.EP_PropertyValue ? configuredPayer.EP_PropertyValue.split(',') : [];
+        
+        if (!currentPayers.includes(getPayerId(payerId))) {
+            currentPayers.push(getPayerId(payerId));
+        }
+  
+        await this.entityPropertyRepository.update(
+            { EP_E_ID: String(hospitalId), EP_PropertyName: 'ConfiguredPayer' },
+            { EP_PropertyValue: currentPayers.join(',') }
+        );
+  
+  }}catch (error) {
+    this.logger.error('Error fetching hospital:', error);
+    throw new BadRequestException('Error fetching hospital: ' + error.message);
+  }}
+
+
+  private async createProfileDetail(hospitalId: number, data: CreateHospitalDto, cityCode: any, stateCode: any): Promise<void> {
     try {
       const newHospitalProfileDetail = this.profileDetailRepository.create({
         PD_IsActive: true,
@@ -205,9 +197,7 @@ export class HospitalDatabaseService {
       await this.profileDetailRepository.save(newHospitalProfileDetail);
     } catch (error) {
       this.logger.error('Error creating Profile Detail:', error);
-      throw new BadRequestException(
-        'Error creating Profile Detail: ' + error.message,
-      );
+      throw new BadRequestException('Error creating Profile Detail: ' + error.message);
     }
   }
 

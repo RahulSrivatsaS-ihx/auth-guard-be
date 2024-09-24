@@ -90,6 +90,7 @@ export const payerHospitalIdMap = {
   'hs': '516571',
   'digit': '516572',
   'ejic': '516574',
+  'default_value': '516573'
 };
 
 export const getPayerId = (payerHospitalId:any) => {
