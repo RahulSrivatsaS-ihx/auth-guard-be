@@ -10,7 +10,7 @@ import { LookupService } from 'src/getLocationCodes/getLocationCodes.service';
 import { TblProfileDetailEntity } from './ProfileDetail.entity';
 import { SimilarityCheckService } from './SimilarityCheck.service';
 import { HospitalDatabaseService } from './HospitalDatabase.service';
-import { HospitalCreationService } from './hospitalCreations.service';
+import { HospitalCreationService } from './HospitalCreation.service';
 import { UserCreationModule } from 'src/userCreation/userCreation.module';
 
 @Module({

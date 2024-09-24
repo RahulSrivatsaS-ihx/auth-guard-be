@@ -12,6 +12,8 @@ import { PayerAdditionModule } from './payerAddition/payerAddition.module';
 import { UserCreationModule } from './userCreation/userCreation.module';
 import { HospitalCreationModule } from './hospitalCreation/hospitalCreation.module';
 import { LookupModule } from './getLocationCodes/getLocationCodes.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -19,20 +21,24 @@ import { LookupModule } from './getLocationCodes/getLocationCodes.module';
       envFilePath: `${process.cwd()}/env/.${process.env.NODE_ENV}.env`,
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot(MediAuthConfig), // Ensure this line is included
+    TypeOrmModule.forRoot(MediAuthConfig), 
     TypeOrmModule.forRoot(IHXSupremeConfig),
     TypeOrmModule.forRoot(ValhallaConfig),
     TypeOrmModule.forRoot(IhxProviderConfig),
 
-    InfoModule, // Ensure this module is imported
+    InfoModule, 
     AuthModule,
     FeatureUpdateModule,
     PayerAdditionModule,
     UserCreationModule,
     HospitalCreationModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'ui'),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService,AuthModule,FeatureUpdateModule,PayerAdditionModule,UserCreationModule,HospitalCreationModule,LookupModule],
+ 
 })
 export class AppModule {
   constructor() {

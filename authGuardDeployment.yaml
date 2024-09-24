@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ihx-auth-utility-be-deployment
+  labels:
+    app.kubernetes.io/name: ihx-app-be
+    k8s-label/app: ihx
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ihx-app-be
+      k8s-label/app: ihx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ihx-app-be
+        k8s-label/app: ihx
+    spec:
+      terminationGracePeriodSeconds: 40
+      serviceAccountName: ihx-stg-sa
+      nodeSelector:
+        iam.gke.io/gke-metadata-server-enabled: "true"
+      containers:
+      - image: asia.gcr.io/ihxpro/ihx-app-be-stg:v2
+        imagePullPolicy: IfNotPresent
+        name: ihx-app-be-stg
+        env:
+        - name: DB_TYPE
+          value: "mysql"
+        - name: DB_USER
+          value: "sqlserver"
+        - name: DB_PASSWORD
+          value: "H2()n5|P-Y5l>PV="
+        - name: DB_DATABASE
+          value: "IHXSupreme"
+        - name: DB_HOST
+          value: "db-stg.ihx.in"
+        - name: DB_PORT
+          value: "1433"
+        - name: DB_LOGGING
+          value: "false"
+        - name: DB_SYNCHRONISATION
+          value: "false"
+        - name: DB_MediAuth_DATABASE
+          value: "MediAuth"
+        - name: DB_VALHALLA_DATABASE
+          value: "Valhalla"
+        - name: DB_IHX_PROVIDER_DATABASE
+          value: "IHXProvider"
+        - name: UI_URL
+          value: "http://localhost:3000"
+      imagePullSecrets:
+      - name: gcr-json-key
