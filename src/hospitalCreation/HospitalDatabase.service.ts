@@ -43,7 +43,7 @@ export class HospitalDatabaseService {
   }
 
   async getHospitalDetails(hospitalId: number): Promise<EntityTbl_Entity> {
-    return this.entityRepository.findOne({ where: { E_Id: (hospitalId) } });
+    return this.entityRepository.findOne({ where: { E_Id: (hospitalId)},select: ['E_Id', 'E_ISACTIVE', 'E_EmailAddress', 'E_PinCode', 'E_PrimaryAddress', 'E_DisplayName'] });
   }
 
 

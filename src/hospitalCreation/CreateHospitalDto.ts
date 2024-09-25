@@ -34,6 +34,7 @@ isCashlessPayer: boolean;
 
   @IsNotEmpty()
   @IsString()
+  @Matches(/^\d{15}$/, { message: 'Rohini code must be exactly 15 digits' })
   rohiniCode: string;
 
   @IsNotEmpty()
